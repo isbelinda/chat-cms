@@ -141,9 +141,9 @@
                 <div style="height: 80%; overflow-y: auto;">
                     <div id="results"></div>
                 </div>
-                <input id="username" type="text" placeholder="Name"><br/>
-                <input id="text" type="text" placeholder="Message"><br/>
-                <button id="post">Post</button><br/>
+                <input id="username" type="text" ng-model="data.username" placeholder="Name"><br/>
+                <input id="text" type="text" placeholder="Message" ng-model="data.text"><br/>
+                <button id="post" ng-click="send()">Post</button><br/>
             </div>
         </div>
 

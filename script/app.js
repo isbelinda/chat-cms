@@ -1,29 +1,18 @@
 var app = angular.module('chatApp',['firebase']);
 
 app.controller('chatController',['$scope', function($scope){
-    $scope.text = 'test';
-    console.log($scope.text);
-
-    var myFirebase = new Firebase('https://fir-webchat-31ebc.firebaseio.com/');
-    var usernameInput = document.querySelector('#username');
-    var textInput = document.querySelector('#text');
-    var postButton = document.querySelector('#post');
-
-    postButton.addEventListener("click", function() {
-        var msgUser = usernameInput.value;
-        var msgText = textInput.value;
-        var date = new Date();
-        // Push text
-        myFirebase.push({
-            username: msgUser,
-            text: msgText,
-            timeStamp: date
-        });
-        textInput.value = "";
-    });
+    var URL_API = 'https://fir-webchat-31ebc.firebaseio.com/';
+    var myFirebase = new Firebase(URL_API);
+    $scope.send = function(){
+        $scope.data.timeStamp = new Date();
+        console.log($scope.data);
+        myFirebase.push($scope.data);
+        
+        $scope.data.text = '';
+    };
 
     /** Function to add a data listener **/
-    var startListening = function() {
+    function startListening(){
         myFirebase.on('child_added', function(snapshot) {
             var msg = snapshot.val();
 
@@ -57,7 +46,7 @@ app.controller('chatController',['$scope', function($scope){
         msgElement.appendChild(msgTextElement);
 
         msgElement.className = "msg";
-           document.getElementById("results").appendChild(msgElement);
+        document.getElementById("results").appendChild(msgElement);
 //        document.getElementById("results").append(msgElement);
 //        $('<div/>').text(text).prepend($('<em/>').text(name + ': ')).appendTo($('#results'));
 //        $('#results')[0].scrollTop = $('#results')[0].scrollHeight;
@@ -67,5 +56,9 @@ app.controller('chatController',['$scope', function($scope){
     startListening();
 
 }]);
+
+
+
+
 
 
