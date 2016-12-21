@@ -5,52 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Firebase Chat</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.min.css"/>
-        <link rel="stylesheet" href="content/css/styles.css" />
+        <link rel="stylesheet" href="contents/css/styles.css" />
     </head>
-    <body>
-        <div class="fix-height-100" ng-app="chatApp">
-            <div class="fix-height-100" ng-controller="chatController">
-                <div class="show-message" scroll-bottom="items">
-                    <div ng-repeat="item in items">
-                        <div class="block-chat-user"
-                             ng-class="username == item.username ? 'block-chat-user owner':'block-chat-user'">
-                            <sm class="name">{{item.username}}</sm>
-                            <p class="text">{{item.text}}</p>
-                            <sm class="date">{{item.posteddate | date:'medium'}}</sm>
-                        </div>
-                    </div>
-                    <!--<div id="results"></div>-->
-                </div>
-                <div class="block-message">
-                    <input type="text" placeholder="Name" class="inputText" ng-model="username">
-                    <input type="text" placeholder="Message"
-                           class="inputText min-width-360"
-                           ng-model="newText"
-                           my-enter="addMessage()">
-                    <button ng-click="addMessage()" class="button is-primary">Send</button>
-                </div>
-                <!--<input id="username" type="text" ng-model="username" placeholder="Name"><br/>-->
-                <!--<input id="text" type="text" placeholder="Message" ng-model="newText"><br/>-->
-                <!--<button id="post" ng-click="addMessage()">Post</button><br/>-->
-            </div>
-        </div>
+    <body ng-app="chatApp">
+    <ui-view></ui-view>
 
-        <script src="bower_components/angular/angular.min.js"></script>
-        <script src="bower_components/firebase/firebase.js"></script>
-        <script src="bower_components/angularfire/dist/angularfire.min.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/firebase/firebase.js"></script>
+    <script src="bower_components/angularfire/dist/angularfire.min.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="bower_components/angular-local-storage/dist/angular-local-storage.min.js"></script>
 
-    <script src="script/app.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/config.js"></script>
 
-        <script>
-            // Initialize Firebase
-            var config = {
-                apiKey: "AIzaSyBRccipNzuLK6veZgpAQPOIUEZAu8Mpy5o",
-                authDomain: "fir-webchat-31ebc.firebaseapp.com",
-                databaseURL: "https://fir-webchat-31ebc.firebaseio.com",
-                storageBucket: "fir-webchat-31ebc.appspot.com",
-                messagingSenderId: "588615177650"
-            };
-            firebase.initializeApp(config);
-        </script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyBRccipNzuLK6veZgpAQPOIUEZAu8Mpy5o",
+            authDomain: "fir-webchat-31ebc.firebaseapp.com",
+            databaseURL: "https://fir-webchat-31ebc.firebaseio.com",
+            storageBucket: "fir-webchat-31ebc.appspot.com",
+            messagingSenderId: "588615177650"
+        };
+        firebase.initializeApp(config);
+    </script>
     </body>
 </html>

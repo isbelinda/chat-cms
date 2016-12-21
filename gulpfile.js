@@ -5,13 +5,16 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var browserSync = require('browser-sync');
 
+var path = {
+    scssSrc: 'contents/scss/*.scss'
+}
 
 gulp.task('sass', function(){
-    return gulp.src('content/scss/*.scss')
+    return gulp.src(path.scssSrc)
         .pipe(sass({
             style: 'compressed'
         }).on('error', sass.logError))
-        .pipe(gulp.dest('content/css'));
+        .pipe(gulp.dest('contents/css'));
 });
 
 gulp.task('browser-sync', function(){
@@ -24,8 +27,8 @@ gulp.task('browser-sync', function(){
 })
 
 gulp.task('default', ['sass', 'browser-sync'], function(){
-    gulp.watch(['*.html'], browserSync.reload);
-    gulp.watch(['script/*.js'], browserSync.reload);
-    gulp.watch(['content/scss/*.scss'], browserSync.reload);
-    gulp.watch("content/scss/*.scss",['sass'])
+    gulp.watch(['views/**/*.html'], browserSync.reload);
+    gulp.watch(['scripts/*.js'], browserSync.reload);
+    gulp.watch([path.scssSrc], browserSync.reload);
+    gulp.watch(path.scssSrc,['sass'])
 });

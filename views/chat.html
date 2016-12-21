@@ -1,0 +1,18 @@
+<div class="show-message" scroll-bottom="items">
+    <div ng-repeat="item in items">
+        <div class="block-chat-user"
+             ng-class="username == item.username ? 'block-chat-user owner':'block-chat-user'">
+            <sm class="name">{{item.username}}</sm>
+            <p class="text">{{item.text}}</p>
+            <sm class="date">{{item.posteddate | date:'medium'}}</sm>
+        </div>
+    </div>
+</div>
+<div class="block-message">
+    <!--<input type="text" placeholder="Name" class="inputText" ng-model="username">-->
+    <input type="text" placeholder="Message"
+           class="inputText min-width-360"
+           ng-model="newText"
+           my-enter="addMessage()">
+    <button ng-click="addMessage()" class="button is-primary">Send</button>
+</div>
