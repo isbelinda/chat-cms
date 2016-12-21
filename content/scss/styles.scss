@@ -1,11 +1,11 @@
-$bg-grey-primary: #d5d5d5;
+$bg-grey-primary: #d8d8d8;
+$black-primary: #000;
 
 $border-radius-xs: 4px;
 body, html{
   height: 100%;
 }
 body {
-  font-family: 'HelveticaNeue-Light';
   margin: 0;
 }
 
@@ -32,6 +32,7 @@ body {
   .name{
     font-size: 14px;
     font-weight: bold;
+    display: block;
   }
   .text {
     margin: 8px;
@@ -39,11 +40,23 @@ body {
     padding: 8px;
     background: $bg-grey-primary;
     border-radius: $border-radius-xs;
+    max-width: 25%;
+    display: inline-block;
   }
 
   .date{
-    font-size: 12px;
+    font-size: 11px;
     margin-left: 8px;
+    vertical-align: baseline;
+    display: block;
+    color: $black-primary;
+  }
+
+  &.owner{
+    text-align: right;
+    .text{
+      background: #23d160;
+    }
   }
 }
 
@@ -64,4 +77,21 @@ body {
 .show-message{
   height: calc(100% - 64px);
   overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .block-chat-user{
+    .text{
+      max-width: 100%;
+    }
+  }
+
+  .block-message {
+    padding: 0;
+
+    .inputText{
+      width: 100%;
+      margin-bottom: 4px;
+    }
+  }
 }

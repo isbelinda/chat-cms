@@ -2,7 +2,6 @@ body, html {
   height: 100%; }
 
 body {
-  font-family: 'HelveticaNeue-Light';
   margin: 0; }
 
 .msg {
@@ -24,16 +23,26 @@ body {
   margin: 16px; }
   .block-chat-user .name {
     font-size: 14px;
-    font-weight: bold; }
+    font-weight: bold;
+    display: block; }
   .block-chat-user .text {
     margin: 8px;
     margin-bottom: 4px;
     padding: 8px;
-    background: #d5d5d5;
-    border-radius: 4px; }
+    background: #d8d8d8;
+    border-radius: 4px;
+    max-width: 25%;
+    display: inline-block; }
   .block-chat-user .date {
-    font-size: 12px;
-    margin-left: 8px; }
+    font-size: 11px;
+    margin-left: 8px;
+    vertical-align: baseline;
+    display: block;
+    color: #000; }
+  .block-chat-user.owner {
+    text-align: right; }
+    .block-chat-user.owner .text {
+      background: #23d160; }
 
 .block-message {
   padding: 16px; }
@@ -47,3 +56,12 @@ body {
 .show-message {
   height: calc(100% - 64px);
   overflow-y: auto; }
+
+@media (max-width: 768px) {
+  .block-chat-user .text {
+    max-width: 100%; }
+  .block-message {
+    padding: 0; }
+    .block-message .inputText {
+      width: 100%;
+      margin-bottom: 4px; } }
