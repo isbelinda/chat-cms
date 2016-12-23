@@ -1,11 +1,58 @@
 var app = angular.module('chatApp',['ui.router', 'firebase', 'LocalStorageModule']);
 
+app.constant('CONFIG', {
 
+});
 
-app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$state', 'localStorageService', function($scope, $firebaseArray, $rootScope, $state, localStorageService){
-    var ref = firebase.database().ref();
+app.constant('FIREBASE_CONFIG', {
+    apiKey: "AIzaSyBRccipNzuLK6veZgpAQPOIUEZAu8Mpy5o",
+    authDomain: "fir-webchat-31ebc.firebaseapp.com",
+    databaseURL: "https://fir-webchat-31ebc.firebaseio.com",
+    storageBucket: "fir-webchat-31ebc.appspot.com",
+    messagingSenderId: "588615177650"
+});
+
+app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorageService', function($scope, $firebaseArray, localStorageService){
+    var info = localStorageService.get('_INFOUSER');
+    var getInfoRoom = firebase.database().ref('chatroom').child('mixhotel');
+
+    var queryRooms = getInfoRoom.orderByChild('timeStamp');
+
+    if(!info.username){
+        $state.go('login');
+        return;
+    }
+
+    function init() {
+        $scope.username = info.username;
+        $scope.rooms = $firebaseArray(queryRooms);
+        console.log($scope.rooms);
+    }
+
+    $scope.removeRoom = function(id){
+        $scope.rooms.$remove(id);
+    };
+
+    $scope.createRoom = function(){
+        var newRoom = {
+            roomName: 'testhotel',
+            createdDate: Date.now(),
+            timeStamp: Date.now()
+        };
+
+        $scope.rooms.$add(newRoom)
+    };
+
+    init();
+}]);
+
+app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$state', 'localStorageService', '$stateParams', '$firebaseObject', function($scope, $firebaseArray, $rootScope, $state, localStorageService, $stateParams, $firebaseObject){
+    console.log($stateParams.id);
 
     var info = localStorageService.get('_INFOUSER');
+    var getMessages = firebase.database().ref('chatroom').child('mixhotel').child($stateParams.id);
+
+    $scope.infoRoom = $firebaseObject(getMessages);
 
     if(!info.username){
         $state.go('login');
@@ -15,20 +62,29 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
     $scope.username = info.username;
 
     function init (){
-        $scope.items = $firebaseArray(ref);    
+        var msgSync = getMessages.child('chatMessage');
+        $scope.items = $firebaseArray(msgSync);
     }
-    
+
     $scope.addMessage = function(){
         if(!$scope.newText) return false;
+
+        $scope.infoRoom.timeStamp = Date.now();
         var data = {
             username: $scope.username,
             text: $scope.newText,
-            posteddate: Date.now()
+            postedDate: Date.now()
         };
-        $scope.items.$add(data);
+
+        $scope.infoRoom.$save().then(function(){
+            $scope.items.$add(data);
+        }).catch(function(error){
+            console.log('error', error)
+        });
+
         $scope.newText = '';
     };
-    
+
     init();
 }]);
 
@@ -61,6 +117,12 @@ app.directive('scrollBottom', function () {
             });
         }
     }
+});
+
+app.filter('reverse', function() {
+    return function(items) {
+        return items.slice().reverse();
+    };
 });
 
 

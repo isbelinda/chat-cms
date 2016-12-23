@@ -1,11 +1,22 @@
 <div class="columns">
     <div class="column"></div>
     <div class="column text-center">
+        <label class="label">Name</label>
         <p class="control">
-            <input class="input" type="text" placeholder="Name"
-                   ng-model="username" my-enter="login(username)">
+            <input class="input" type="text" placeholder="Name" ng-model="data.username">
         </p>
-        <button class="button is-primary" ng-click="login(username)">Login</button>
+        <label class="label">Subject</label>
+        <p class="control">
+          <span class="select">
+            <select ng-model="data.hotelId">
+                <option value="">Select Hotel</option>
+                <option value="MixHotel">Mix Hotel</option>
+                <option value="MaxHotel">Max Hotel</option>
+                <option value="Socket9Hotel">Socket9 Hotel</option>
+            </select>
+          </span>
+        </p>
+        <button class="button is-primary" ng-click="login(data)">Go to chat</button>
     </div>
     <div class="column"></div>
 </div>

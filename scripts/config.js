@@ -6,22 +6,34 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             url: '/',
             templateUrl: 'views/login.html'
         })
-        .state('chat',{
-            url: '/chat',
+        .state('rooms', {
+            url: '/chatRooms',
+            templateUrl: 'views/chatRooms.html',
+            controller: 'chatRoomsController'
+        })
+        .state('rooms.chat',{
+            url: '/chat/:id',
             templateUrl: 'views/chat.html',
             controller: 'chatController'
         })
 }]);
 
-app.run(['$state', '$rootScope', 'localStorageService', function ($state, $rootScope, localStorageService) {
-    $rootScope.login = function(user){
-        if(user){
+app.run(['$state', '$rootScope', 'localStorageService', 'FIREBASE_CONFIG', function ($state, $rootScope, localStorageService, FIREBASE_CONFIG) {
+    // Initialize Firebase
+    var config = FIREBASE_CONFIG;
+    
+    firebase.initializeApp(config);
+    
+    $rootScope.login = function(data){
+        console.log(data);
+        if(data){
             var info = {
-                username: user
+                username: data.username,
+                hotel: data.hotelId
             };
-
+        
             localStorageService.set('_INFOUSER', info);
-            $state.go('chat');
+            $state.go('rooms');
         }
     }
 }]);

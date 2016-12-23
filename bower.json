@@ -18,6 +18,7 @@
     "angular": "^1.6.0",
     "angularfire": "^2.1.0",
     "angular-ui-router": "^0.3.2",
-    "angular-local-storage": "^0.5.2"
+    "angular-local-storage": "^0.5.2",
+    "angular-resource": "^1.6.0"
   }
 }

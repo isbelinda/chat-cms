@@ -1,0 +1,45 @@
+<section class="hero is-primary is-medium">
+    <!-- Hero header: will stick at the top -->
+    <div class="hero-head">
+        <header class="nav">
+            <div class="container">
+                <div class="nav-left">
+                    <a class="nav-item">
+                        Chat Management
+                    </a>
+                </div>
+                <span class="nav-toggle">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
+                <div class="nav-right nav-menu">
+                    <a class="nav-item is-active">
+                        Welcome, {{username}}
+                    </a>
+                    <a class="nav-item">
+                        <span class="icon">
+                          <i class="fa fa-sign-out"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
+</section>
+
+<div class="columns is-gapless">
+    <div class="column is-one-quarter">
+        <div>
+            <a href="#" ng-repeat="room in rooms | reverse">
+                <p ui-sref="rooms.chat({id: room.$id})">{{room.roomname}}</p>
+                <!--<span class="icon is-small" ng-click="removeRoom(room.$id)">-->
+                  <!--<i class="fa fa-remove"></i>-->
+                <!--</span>-->
+            </a>
+        </div>
+    </div>
+    <div class="column">
+        <ui-view></ui-view>
+    </div>
+</div>
