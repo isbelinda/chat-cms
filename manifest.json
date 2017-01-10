@@ -1,0 +1,10 @@
+{
+  "name": "Chat CMS",
+  "short_name": "Chat CMS",
+  "icons": [],
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#3273dc",
+  "gcm_sender_id": "103953800507"
+}

@@ -28,11 +28,22 @@
     </div>
 </section>
 
-<div class="columns is-gapless">
+<div class="columns is-gapless fix-height-block-cms">
+    <div id=”message”>
+        <h1>Hello Web FCM</h1>
+        <p>Click on Subscribe button to hello world!</p>
+        <ul>
+            <li><a ng-click="showToken()">Show Token</a></li>
+        </ul>
+        <h3>Token</h3>
+        {{token}}
+    </div>
     <div class="column is-one-quarter">
-        <div>
-            <a href="#" ng-repeat="room in rooms | reverse">
-                <p ui-sref="rooms.chat({id: room.$id})">{{room.roomname}}</p>
+        <div class="block-rooms">
+            <a class="room-name" ng-repeat="room in rooms | reverse" ng-click="goChatRoom(room)">
+                <!--<p ui-sref="rooms.chat({id: room.$id})">{{room.roomName}}</p>-->
+                <span>{{room.roomName}}</span>
+                <span class="badge pull-right" ng-if="room.admin.unReadMessage > 0">{{room.admin.unReadMessage}}</span>
                 <!--<span class="icon is-small" ng-click="removeRoom(room.$id)">-->
                   <!--<i class="fa fa-remove"></i>-->
                 <!--</span>-->

@@ -32,7 +32,8 @@ body {
     background: #d8d8d8;
     border-radius: 4px;
     max-width: 25%;
-    display: inline-block; }
+    display: inline-block;
+    word-break: break-all; }
   .block-chat-user .date {
     font-size: 11px;
     margin-left: 8px;
@@ -53,9 +54,25 @@ body {
     .block-message .inputText.min-width-360 {
       min-width: 360px; }
 
+.block-rooms .room-name {
+  display: block;
+  padding: 8px; }
+
+.block-rooms .badge {
+  background: #d6d6d6;
+  padding: 4px;
+  border-radius: 16px;
+  font-size: 10px;
+  min-width: 25px;
+  text-align: center;
+  color: red; }
+
 .show-message {
   height: calc(100% - 64px);
   overflow-y: auto; }
+
+.fix-height-block-cms {
+  height: calc(100% - 50px); }
 
 @media (max-width: 768px) {
   .block-chat-user .text {

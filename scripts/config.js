@@ -18,22 +18,41 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         })
 }]);
 
-app.run(['$state', '$rootScope', 'localStorageService', 'FIREBASE_CONFIG', function ($state, $rootScope, localStorageService, FIREBASE_CONFIG) {
+app.run(['$state', '$rootScope', 'localStorageService', 'FIREBASE_CONFIG', '$firebaseAuth', function ($state, $rootScope, localStorageService, FIREBASE_CONFIG, $firebaseAuth) {
     // Initialize Firebase
-    var config = FIREBASE_CONFIG;
+    const config = FIREBASE_CONFIG;
+
+    // const auth = firebase.auth();
     
     firebase.initializeApp(config);
     
     $rootScope.login = function(data){
-        console.log(data);
+        // console.log(data);
         if(data){
             var info = {
                 username: data.username,
-                hotel: data.hotelId
+                businessId: data.hotelId
             };
-        
+
+            // const infoUser = {
+            //     email: `bow@socket9.com`,
+            //     password: `belinda123`
+            // };
+
+            // auth.signInWithEmailAndPassword(infoUser.email, infoUser.password)
+            //     .then(() => {
+            //         var user = auth.currentUser;
+            //         console.log(user);
+            //
+            //         localStorageService.set('_INFOUSER', info);
+            //         $state.go('rooms');
+            //     })
+            //     .catch(function(error) {
+            //         console.log(error);
+            // });
+
             localStorageService.set('_INFOUSER', info);
             $state.go('rooms');
         }
-    }
+    };
 }]);
