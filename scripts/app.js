@@ -1,10 +1,11 @@
-var app = angular.module('chatApp',['ui.router', 'firebase', 'LocalStorageModule']);
+var app = angular.module('chatApp',['ui.router', 'ngResource', 'firebase', 'LocalStorageModule']);
 
 app.constant('CONFIG', {
     // DATE_NOW: new Date().toISOString(),
     // DATE_NOW: Date.now(),
     DATE_NOW: firebase.database.ServerValue.TIMESTAMP,
-    PATH_FIREBASE: `chatRooms/Socket9Hotel/`
+    PATH_FIREBASE: `chatRooms/`,
+    PATH_API: `http://localhost:3001/api`
 });
 
 app.constant('FIREBASE_CONFIG', {
@@ -15,9 +16,34 @@ app.constant('FIREBASE_CONFIG', {
     messagingSenderId: "588615177650"
 });
 
-app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorageService', 'CONFIG', '$firebaseObject', '$state', '$firebaseAuth', function($scope, $firebaseArray, localStorageService, CONFIG, $firebaseObject, $state, $firebaseAuth){
+app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorageService`, function ($scope, apiService, $state, localStorageService) {
+    $scope.login = (data) => {
+        apiService.login.login(data, (res) => {
+            console.log(res);
+            if(res.isSuccess && res.results.roleId === 2){
+
+                let info = {
+                    userId: res.results.userId,
+                    username: res.results.username,
+                    roomCategoryId: res.results.hotelId,
+                    roomCategoryName: res.results.hotelName,
+                    token: res.token,
+                    token_fcm: res.results.token_fcm
+                };
+
+                localStorageService.set('_INFOUSER', info);
+                localStorageService.set('_TOKEN', res.token);
+                $state.go('rooms');
+            } else {
+                $scope.errMessage = res.message || `This user not admin chat.`;
+            }
+        })
+    }
+}]);
+
+app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorageService', 'CONFIG', '$firebaseObject', '$state', '$firebaseAuth', 'apiService', function($scope, $firebaseArray, localStorageService, CONFIG, $firebaseObject, $state, $firebaseAuth, apiService){
     const info = localStorageService.get('_INFOUSER');
-    const getInfoRoom = firebase.database().ref(CONFIG.PATH_FIREBASE);
+    const getInfoRoom = firebase.database().ref(CONFIG.PATH_FIREBASE + info.roomCategoryId);
     const queryRooms = getInfoRoom.orderByChild('timeStamp');
     const messaging = firebase.messaging();
 
@@ -29,28 +55,9 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     const init = () => {
         $scope.username = info.username;
         $scope.rooms = $firebaseArray(queryRooms);
-        // console.log($scope.rooms);
-
-        // messaging.getToken()
-        //     .then(function(refreshedToken) {
-        //         console.log(refreshedToken);
-        //         console.log('Token get.');
-        //         // Indicate that the new Instance ID token has not yet been sent to the
-        //         // app server.
-        //         // setTokenSentToServer(false);
-        //         // // Send Instance ID token to app server.
-        //         // sendTokenToServer(refreshedToken);
-        //         // ...
-        //     })
-        //     .catch(function(err) {
-        //         console.log('Unable to retrieve refreshed token ', err);
-        //         // showToken('Unable to retrieve refreshed token ', err);
-        //     });
-
     };
 
     $scope.goChatRoom = function(data){
-        // console.log(data);
         const getRoomSelect = firebase.database().ref(CONFIG.PATH_FIREBASE + data.roomName + '/admin');
 
         getRoomSelect.update({
@@ -60,32 +67,38 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
         $state.go('rooms.chat', {id: data.$id});
     };
 
+    const getTokenMessaging = () => {
+        // Get Instance ID token. Initially this makes a network call, once retrieved
+        // subsequent calls to getToken will return from cache.
+        messaging.getToken()
+            .then(function(currentToken) {
+                if (currentToken) {
+                    updateToken(currentToken);
+                } else {
+                    // Show permission request.
+                    console.log('No Instance ID token available. Request permission to generate one.');
+                }
+            })
+            .catch(function(err) {
+                console.log('An error occurred while retrieving token. ', err);
+            });
+    };
 
-
-    // $scope.showToken = () => {
-    //     // Get Instance ID token. Initially this makes a network call, once retrieved
-    //     // subsequent calls to getToken will return from cache.
-    //     messaging.getToken()
-    //         .then(function(currentToken) {
-    //             if (currentToken) {
-    //                 console.log("currentToken", currentToken);
-    //                 $scope.token = currentToken;
-    //             } else {
-    //                 // Show permission request.
-    //                 console.log('No Instance ID token available. Request permission to generate one.');
-    //
-    //             }
-    //         })
-    //         .catch(function(err) {
-    //             console.log('An error occurred while retrieving token. ', err);
-    //         });
-    // }
+    const updateToken = (token) => {
+        apiService.chat.updateToken({ token_fcm: token}, (res) => {
+            if(res.isSuccess){
+                console.log(`update token success`);
+            }
+        });
+    };
 
     messaging.requestPermission()
         .then(function() {
             console.log('Notification permission granted.');
             // TODO(developer): Retrieve a Instance ID token for use with FCM.
             // ...
+
+            getTokenMessaging();
         })
         .catch(function(err) {
             console.log('Unable to get permission to notify. ', err);
@@ -93,29 +106,15 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
 
     messaging.onMessage(function(payload) {
         console.log('Message received.', payload);
-        let notificationTitle = 'New message';
-        const notificationOptions = {
-            body: `You have new message.`,
-            icon: 'contents/images/icons/icon.png',
-            badge: 'contents/images/icons/icon.png'
-        };
-
-        // if(event.data) {
-        //     notificationTitle = 'Received Payload';
-        //     notificationOptions.body = payload;
-        // }
-
-        // const notificationPromise = self.registration.showNotification(notificationTitle, notificationOptions);
-        // payload.waitUntil(notificationPromise);
 
     });
 
     init();
 }]);
 
-app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$state', 'localStorageService', '$stateParams', '$firebaseObject', 'CONFIG', function($scope, $firebaseArray, $rootScope, $state, localStorageService, $stateParams, $firebaseObject, CONFIG){
+app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$state', 'localStorageService', '$stateParams', '$firebaseObject', 'CONFIG', 'apiService', function($scope, $firebaseArray, $rootScope, $state, localStorageService, $stateParams, $firebaseObject, CONFIG, apiService){
     const info = localStorageService.get('_INFOUSER');
-    const getPath = firebase.database().ref(CONFIG.PATH_FIREBASE);
+    const getPath = firebase.database().ref(CONFIG.PATH_FIREBASE + info.roomCategoryId);
     const getMessages = getPath.child($stateParams.id);
 
     $scope.infoRoom = $firebaseObject(getMessages);
@@ -138,7 +137,14 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
 
     $scope.addMessage = () => {
         if(!$scope.newText) return false;
-
+        
+        const dataMessage = {
+            notification: {
+                body: $scope.newText
+            },
+            userId: 205
+        };
+        
         const data = {
             username: $scope.username,
             text: $scope.newText,
@@ -147,6 +153,9 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
 
         $scope.infoRoom.$save().then(() => {
             $scope.items.$add(data);
+            apiService.chat.sendMessage(dataMessage, (res) => {
+                console.log(res);
+            });
         }).catch((error) => {
             console.log('error', error)
         });
@@ -155,10 +164,6 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
             timeStamp: CONFIG.DATE_NOW,
             unReadMessage: ($scope.infoRoom.unReadMessage || 0) + 1
         });
-
-        // updateCountMsg.transaction(function(currentValue) {
-        //     return (currentValue || 0) + 1;
-        // });
 
         $scope.newText = '';
     };

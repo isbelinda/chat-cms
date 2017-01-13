@@ -4,7 +4,8 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     $stateProvider
         .state('login',{
             url: '/',
-            templateUrl: 'views/login.html'
+            templateUrl: 'views/login.html',
+            controller: `mainController`
         })
         .state('rooms', {
             url: '/chatRooms',
@@ -18,41 +19,26 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         })
 }]);
 
-app.run(['$state', '$rootScope', 'localStorageService', 'FIREBASE_CONFIG', '$firebaseAuth', function ($state, $rootScope, localStorageService, FIREBASE_CONFIG, $firebaseAuth) {
+app.run(['$state', '$rootScope', 'localStorageService', 'FIREBASE_CONFIG', '$firebaseAuth', 'apiService', function ($state, $rootScope, localStorageService, FIREBASE_CONFIG, $firebaseAuth, apiService) {
     // Initialize Firebase
     const config = FIREBASE_CONFIG;
 
-    // const auth = firebase.auth();
-    
     firebase.initializeApp(config);
-    
-    $rootScope.login = function(data){
-        // console.log(data);
-        if(data){
-            var info = {
-                username: data.username,
-                businessId: data.hotelId
-            };
+}]);
 
-            // const infoUser = {
-            //     email: `bow@socket9.com`,
-            //     password: `belinda123`
-            // };
+// ADD AUTHORIZATION IN HEADER FOR GET API
+app.factory('oauthHttpInterceptor', ['localStorageService', function (localStorageService) {
+    return {
+        request: function (config) {
+            if (config.headers.Accept.indexOf('json') > -1)
+                config.headers['Authorization_user'] = localStorageService.get('_TOKEN');
 
-            // auth.signInWithEmailAndPassword(infoUser.email, infoUser.password)
-            //     .then(() => {
-            //         var user = auth.currentUser;
-            //         console.log(user);
-            //
-            //         localStorageService.set('_INFOUSER', info);
-            //         $state.go('rooms');
-            //     })
-            //     .catch(function(error) {
-            //         console.log(error);
-            // });
-
-            localStorageService.set('_INFOUSER', info);
-            $state.go('rooms');
+            console.log(config);
+            return config;
         }
     };
 }]);
+
+app.config(function ($httpProvider) {
+    $httpProvider.interceptors.push('oauthHttpInterceptor');
+});
