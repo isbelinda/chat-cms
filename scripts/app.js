@@ -156,7 +156,7 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
             role: CONFIG.ROLE_CHAT
         };
         
-        console.log(dataMessage)
+        // console.log(dataMessage);
 
         $scope.infoRoom.$save().then(() => {
             $scope.items.$add(data);
@@ -175,6 +175,10 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
         getMessages.update({
             timeStamp: CONFIG.DATE_NOW,
             unReadMessage: ($scope.infoRoom.unReadMessage || 0) + 1
+        });
+
+        getMessages.child(`admin`).update({
+            unReadMessage: 0
         });
 
         $scope.newText = '';
