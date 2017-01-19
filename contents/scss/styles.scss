@@ -1,7 +1,17 @@
-$bg-grey-primary: #d8d8d8;
+$bg-grey-primary: #eee;
 $black-primary: #000;
 
 $border-radius-xs: 4px;
+
+$sky-dark-primary-color: #02adcc;
+$sky-light-primary-color: #6fcee5;
+
+$orange-dark-primary-color: #f26f27;
+$orange-light-primary-color: #f5881f;
+
+$bg-login-color: #F7F5F2;
+$bg-input-login-color: #EAE6E1;
+
 body, html{
   height: 100%;
 }
@@ -26,6 +36,64 @@ body {
   height: 100%;
 }
 
+.max-width-320{
+  max-width: 320px;
+}
+
+/// Position
+.text-center{
+  text-align: center;
+}
+
+.margin-top-8{
+  margin-top: 8px;
+}
+
+.margin-bottom-16{
+  margin-bottom: 16px;
+}
+
+.margin-top-50-per{
+  margin-top: 50%;
+}
+
+
+/// Font size
+.text-size-24{
+  font-size: 24px;
+}
+
+/// Theme
+.is-primary{
+  &.button,
+  &.hero{
+    background-color: $sky-dark-primary-color;
+  }
+
+  &:hover, &:focus{
+    &.button{
+      background-color: $sky-light-primary-color;
+    }
+  }
+}
+
+a{
+  color: $sky-dark-primary-color;
+}
+
+.text-error{
+  color: $orange-dark-primary-color;
+}
+
+.error-message{
+  color: $orange-dark-primary-color;
+
+  .fa{
+    margin-right: 8px;
+    vertical-align: baseline;
+  }
+}
+
 .block-chat-user {
   margin: 16px;
 
@@ -43,6 +111,7 @@ body {
     max-width: 25%;
     display: inline-block;
     word-break: break-all;
+    color: $black-primary;
   }
 
   .date{
@@ -56,7 +125,7 @@ body {
   &.owner{
     text-align: right;
     .text{
-      background: #23d160;
+      background: $sky-light-primary-color;
     }
   }
 }
@@ -82,13 +151,13 @@ body {
   }
 
   .badge{
-    background: #d6d6d6;
+    background: $bg-grey-primary;
     padding: 4px;
     border-radius: 16px;
     font-size: 10px;
     min-width: 25px;
     text-align: center;
-    color: red;
+    color: $orange-dark-primary-color;
   }
 }
 
@@ -99,6 +168,26 @@ body {
 
 .fix-height-block-cms{
   height: calc(100% - 50px);
+}
+
+.login-page{
+  background: $bg-login-color;
+
+  .control{
+    .input{
+      background: $bg-input-login-color;
+      border: none;
+      box-shadow: none;
+      padding: 8px 16px;
+      height: auto;
+    }
+  }
+
+  .button{
+    padding: 8px;
+    height: auto;
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {

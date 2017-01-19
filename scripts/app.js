@@ -1,11 +1,13 @@
-var app = angular.module('chatApp',['ui.router', 'ngResource', 'firebase', 'LocalStorageModule']);
+var app = angular.module('chatApp',['ui.router', 'ngResource', 'firebase', 'LocalStorageModule', 'ngSanitize']);
 
 app.constant('CONFIG', {
     // DATE_NOW: new Date().toISOString(),
     // DATE_NOW: Date.now(),
     DATE_NOW: firebase.database.ServerValue.TIMESTAMP,
     PATH_FIREBASE: `chatRooms/`,
-    PATH_API: `http://localhost:3001/api`
+    // PATH_API: `http://localhost:3001/api`,
+    PATH_API: `http://api2.handigothailand.com/api`,
+    ROLE_CHAT: 1 // Mark user
 });
 
 app.constant('FIREBASE_CONFIG', {
@@ -16,12 +18,11 @@ app.constant('FIREBASE_CONFIG', {
     messagingSenderId: "588615177650"
 });
 
-app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorageService`, function ($scope, apiService, $state, localStorageService) {
+app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorageService`, `$sce`, function ($scope, apiService, $state, localStorageService, $sce) {
     $scope.login = (data) => {
         apiService.login.login(data, (res) => {
             console.log(res);
             if(res.isSuccess && res.results.roleId === 2){
-
                 let info = {
                     userId: res.results.userId,
                     username: res.results.username,
@@ -35,10 +36,12 @@ app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorag
                 localStorageService.set('_TOKEN', res.token);
                 $state.go('rooms');
             } else {
-                $scope.errMessage = res.message || `This user not admin chat.`;
+                $scope.errMessage = `<i class="fa fa-times" aria-hidden="true"></i> This user not admin.`;
             }
         })
-    }
+    };
+
+    
 }]);
 
 app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorageService', 'CONFIG', '$firebaseObject', '$state', '$firebaseAuth', 'apiService', function($scope, $firebaseArray, localStorageService, CONFIG, $firebaseObject, $state, $firebaseAuth, apiService){
@@ -58,7 +61,8 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     };
 
     $scope.goChatRoom = function(data){
-        const getRoomSelect = firebase.database().ref(CONFIG.PATH_FIREBASE + data.roomName + '/admin');
+        // console.log(data);
+        const getRoomSelect = firebase.database().ref(`${CONFIG.PATH_FIREBASE}/${info.roomCategoryId}/${data.$id}/admin`);
 
         getRoomSelect.update({
             unReadMessage: 0
@@ -142,19 +146,27 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
             notification: {
                 body: $scope.newText
             },
-            userId: 205
+            userId: $stateParams.id
         };
         
         const data = {
             username: $scope.username,
             text: $scope.newText,
-            postedDate: CONFIG.DATE_NOW
+            postedDate: CONFIG.DATE_NOW,
+            role: CONFIG.ROLE_CHAT
         };
+        
+        console.log(dataMessage)
 
         $scope.infoRoom.$save().then(() => {
             $scope.items.$add(data);
             apiService.chat.sendMessage(dataMessage, (res) => {
                 console.log(res);
+                if(res.isSuccess){
+
+                } else {
+                    console.log(res.message);
+                }
             });
         }).catch((error) => {
             console.log('error', error)
@@ -166,6 +178,9 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
         });
 
         $scope.newText = '';
+
+
+
     };
     
     init();

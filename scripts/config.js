@@ -24,6 +24,12 @@ app.run(['$state', '$rootScope', 'localStorageService', 'FIREBASE_CONFIG', '$fir
     const config = FIREBASE_CONFIG;
 
     firebase.initializeApp(config);
+
+    $rootScope.signOut = () => {
+        console.log(`log out`);
+        localStorageService.clearAll();
+        $state.go('login');
+    }
 }]);
 
 // ADD AUTHORIZATION IN HEADER FOR GET API
@@ -33,7 +39,7 @@ app.factory('oauthHttpInterceptor', ['localStorageService', function (localStora
             if (config.headers.Accept.indexOf('json') > -1)
                 config.headers['Authorization_user'] = localStorageService.get('_TOKEN');
 
-            console.log(config);
+            // console.log(config);
             return config;
         }
     };

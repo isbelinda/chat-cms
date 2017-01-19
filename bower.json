@@ -19,6 +19,7 @@
     "angularfire": "^2.1.0",
     "angular-ui-router": "^0.3.2",
     "angular-local-storage": "^0.5.2",
-    "angular-resource": "^1.6.1"
+    "angular-resource": "^1.6.1",
+    "angular-sanitize": "^1.6.1"
   }
 }
