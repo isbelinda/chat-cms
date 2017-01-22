@@ -6,21 +6,32 @@ app.constant('CONFIG', {
     DATE_NOW: firebase.database.ServerValue.TIMESTAMP,
     PATH_FIREBASE: `chatRooms/`,
     // PATH_API: `http://localhost:3001/api`,
-    PATH_API: `http://api2.handigothailand.com/api`,
+    // PATH_API: `http://localhost:3004/api`,
+    // PATH_API: `http://api2.handigothailand.com/api`,
+    PATH_API: `https://apichat.herokuapp.com/api`,
     ROLE_CHAT: 1 // Mark user
 });
 
+// app.constant('FIREBASE_CONFIG', {
+//     apiKey: "AIzaSyBRccipNzuLK6veZgpAQPOIUEZAu8Mpy5o",
+//     authDomain: "fir-webchat-31ebc.firebaseapp.com",
+//     databaseURL: "https://fir-webchat-31ebc.firebaseio.com",
+//     storageBucket: "fir-webchat-31ebc.appspot.com",
+//     messagingSenderId: "588615177650"
+// });
+
 app.constant('FIREBASE_CONFIG', {
-    apiKey: "AIzaSyBRccipNzuLK6veZgpAQPOIUEZAu8Mpy5o",
-    authDomain: "fir-webchat-31ebc.firebaseapp.com",
-    databaseURL: "https://fir-webchat-31ebc.firebaseio.com",
-    storageBucket: "fir-webchat-31ebc.appspot.com",
-    messagingSenderId: "588615177650"
+    apiKey: "AIzaSyAFAOy5FbbMdcCduxMZ1qJDeGjabOI_MBc",
+    authDomain: "handigo-437c3.firebaseapp.com",
+    databaseURL: "https://handigo-437c3.firebaseio.com",
+    storageBucket: "handigo-437c3.appspot.com",
+    messagingSenderId: "507994112278"
 });
+
 
 app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorageService`, `$sce`, function ($scope, apiService, $state, localStorageService, $sce) {
     $scope.login = (data) => {
-        apiService.login.login(data, (res) => {
+        apiService.user.login(data, (res) => {
             console.log(res);
             if(res.isSuccess && res.results.roleId === 2){
                 let info = {
@@ -28,12 +39,12 @@ app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorag
                     username: res.results.username,
                     roomCategoryId: res.results.hotelId,
                     roomCategoryName: res.results.hotelName,
-                    token: res.token,
+                    token: res.results.token,
                     token_fcm: res.results.token_fcm
                 };
 
                 localStorageService.set('_INFOUSER', info);
-                localStorageService.set('_TOKEN', res.token);
+                localStorageService.set('_TOKEN', res.results.token);
                 $state.go('rooms');
             } else {
                 $scope.errMessage = `<i class="fa fa-times" aria-hidden="true"></i> This user not admin.`;
@@ -72,11 +83,14 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     };
 
     const getTokenMessaging = () => {
+        console.log(`get token`);
         // Get Instance ID token. Initially this makes a network call, once retrieved
         // subsequent calls to getToken will return from cache.
         messaging.getToken()
             .then(function(currentToken) {
+                console.log(currentToken);
                 if (currentToken) {
+                    console.log('update');
                     updateToken(currentToken);
                 } else {
                     // Show permission request.
@@ -89,7 +103,7 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     };
 
     const updateToken = (token) => {
-        apiService.chat.updateToken({ token_fcm: token}, (res) => {
+        apiService.user.updateToken({ token_fcm: token}, (res) => {
             if(res.isSuccess){
                 console.log(`update token success`);
             }
@@ -99,9 +113,6 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     messaging.requestPermission()
         .then(function() {
             console.log('Notification permission granted.');
-            // TODO(developer): Retrieve a Instance ID token for use with FCM.
-            // ...
-
             getTokenMessaging();
         })
         .catch(function(err) {
@@ -160,7 +171,7 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
 
         $scope.infoRoom.$save().then(() => {
             $scope.items.$add(data);
-            apiService.chat.sendMessage(dataMessage, (res) => {
+            apiService.user.sendMessage(dataMessage, (res) => {
                 console.log(res);
                 if(res.isSuccess){
 

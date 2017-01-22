@@ -38,6 +38,7 @@ app.factory('oauthHttpInterceptor', ['localStorageService', function (localStora
         request: function (config) {
             if (config.headers.Accept.indexOf('json') > -1)
                 config.headers['Authorization_user'] = localStorageService.get('_TOKEN');
+                // config.headers['Authorization_user'] = localStorageService.get('_TOKEN');
 
             // console.log(config);
             return config;
