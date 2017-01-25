@@ -10,8 +10,6 @@ var filesToCache = [
     '/views/login.html'
 ];
 
-console.log(`test service worker`);
-
 self.addEventListener('install', function (event) {
     console.log('Service worker install');
     event.waitUntil(
@@ -74,4 +72,8 @@ self.addEventListener('notificationclick', function(event) {
     event.waitUntil(
         clients.openWindow('https://developers.google.com/web/')
     );
+});
+
+self.addEventListener('message', function(event){
+    console.log("SW Received Message: " + event.data);
 });

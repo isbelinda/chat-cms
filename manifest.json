@@ -1,6 +1,6 @@
 {
-  "name": "Chat CMS",
-  "short_name": "Chat CMS",
+  "name": "Live chat",
+  "short_name": "Live chat",
   "icons": [],
   "start_url": "index.html",
   "display": "standalone",

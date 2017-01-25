@@ -7,8 +7,8 @@ app.constant('CONFIG', {
     PATH_FIREBASE: `chatRooms/`,
     // PATH_API: `http://localhost:3001/api`,
     // PATH_API: `http://localhost:3004/api`,
-    // PATH_API: `http://api2.handigothailand.com/api`,
-    PATH_API: `https://apichat.herokuapp.com/api`,
+    PATH_API: `https://livechatapi.handigothailand.com/api`,
+    // PATH_API: `https://apichat.herokuapp.com/api`,
     ROLE_CHAT: 1 // Mark user
 });
 
@@ -52,6 +52,34 @@ app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorag
         })
     };
 
+    const messaging = firebase.messaging();
+
+    messaging.requestPermission()
+        .then(function() {
+            console.log('Notification permission granted.');
+            messaging.getToken()
+                .then(function(currentToken) {
+                    console.log(currentToken);
+                    if (currentToken) {
+                        localStorageService.set('TOKEN_FCM', currentToken)
+                    } else {
+                        // Show permission request.
+                        console.log('No Instance ID token available. Request permission to generate one.');
+                    }
+                })
+                .catch(function(err) {
+                    console.log('An error occurred while retrieving token. ', err);
+                });
+        })
+        .catch(function(err) {
+            console.log('Unable to get permission to notify. ', err);
+        });
+
+    messaging.onMessage(function(payload) {
+        console.log('Message received.', payload);
+    
+    });
+
     
 }]);
 
@@ -59,7 +87,7 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     const info = localStorageService.get('_INFOUSER');
     const getInfoRoom = firebase.database().ref(CONFIG.PATH_FIREBASE + info.roomCategoryId);
     const queryRooms = getInfoRoom.orderByChild('timeStamp');
-    const messaging = firebase.messaging();
+    // const messaging = firebase.messaging();
 
     if(!info.username){
         $state.go('login');
@@ -69,6 +97,7 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     const init = () => {
         $scope.username = info.username;
         $scope.rooms = $firebaseArray(queryRooms);
+        updateToken(localStorageService.get('TOKEN_FCM'));
     };
 
     $scope.goChatRoom = function(data){
@@ -82,47 +111,14 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
         $state.go('rooms.chat', {id: data.$id});
     };
 
-    const getTokenMessaging = () => {
-        console.log(`get token`);
-        // Get Instance ID token. Initially this makes a network call, once retrieved
-        // subsequent calls to getToken will return from cache.
-        messaging.getToken()
-            .then(function(currentToken) {
-                console.log(currentToken);
-                if (currentToken) {
-                    console.log('update');
-                    updateToken(currentToken);
-                } else {
-                    // Show permission request.
-                    console.log('No Instance ID token available. Request permission to generate one.');
-                }
-            })
-            .catch(function(err) {
-                console.log('An error occurred while retrieving token. ', err);
-            });
-    };
-
     const updateToken = (token) => {
         apiService.user.updateToken({ token_fcm: token}, (res) => {
+            console.log(res)
             if(res.isSuccess){
                 console.log(`update token success`);
             }
         });
     };
-
-    messaging.requestPermission()
-        .then(function() {
-            console.log('Notification permission granted.');
-            getTokenMessaging();
-        })
-        .catch(function(err) {
-            console.log('Unable to get permission to notify. ', err);
-        });
-
-    messaging.onMessage(function(payload) {
-        console.log('Message received.', payload);
-
-    });
 
     init();
 }]);
@@ -140,6 +136,7 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
     }
 
     $scope.username = info.username;
+    $scope.roleChat = CONFIG.ROLE_CHAT;
 
     function init (){
         const msgSync = getMessages.child('chatMessage');
@@ -194,8 +191,6 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
 
         $scope.newText = '';
 
-
-
     };
     
     init();
@@ -238,30 +233,3 @@ app.filter('reverse', function() {
     };
 });
 
-
-// curl -X POST -H "Authorization: key=AIzaSyBRccipNzuLK6veZgpAQPOIUEZAu8Mpy5o" -H "Content-Type: application/json" -d '{
-// "notification": {
-//     "title": "Portugal vs. Denmark",
-//         "body": "5 to 1",
-//         "click_action": "http://localhost:6010"
-// },
-// "to": "ADDl5SHpBaUqM9Nz1gQcPwVjqnNM1n85kT3zd1atyBPpdaa_eHpTLSk4Iz7cL4slr-hg5SzFiWvcWOBKAClPIEhrqeSQzswhRCOXwK1zsWaHQXfNY3_YsRToreDXa4vb9NerJz0cVAjoQcvcCTAoQxEbir54ChD5mDHhaMyNwZuo6TFCtcCt1_PUJcClzL7AU6RXAm5RU814EW-cVyTuDYLrhrljJQCEMw"
-// }' "https://fcm.googleapis.com/fcm/send"
-
-//
-// curl -X POST --header "Authorization: key=AAAAiQwy1bI:APA91bFsiMmjaWhVj6-uWFFMTo-2_ra70fjn1Gyuufzi7F3HXIqWl6VMTvRKJuGV21M6O2MF60NpzXKBc0mlvLIcR5kK3RNU990KLKaCTUJMHqGsORtyM2C07A6YzEn1BqVwGWRAdHmlj5eja9JoIx3MB9VX7JBAFw" \
-// --Header "Content-Type: application/json" \
-// https://fcm.googleapis.com/fcm/send \
-//     -d "{\"to\":\"d4ol-GDihLw:APA91bG0mjbmZmXrpg0p6sBhXvs5CEKittshNvg3vXnJ7FVh4ZdYKoqkRQiM-X6yr_PQrxVGVG9XTzqgX_vr-pg6Bq_2OVn6Mm5xa2H6b1HDOvh7K1Z6avSDf_k5XnWqhjB0W5g99zHX\",\"notification\":{\"body\":\"Yellow\"},\"priority\":10}"
-
-// curl -X POST -H "Authorization: key=AIzaSyBRccipNzuLK6veZgpAQPOIUEZAu8Mpy5o" -H "Content-Type: application/json" -d '{
-// "to": "d4ol-GDihLw:APA91bG0mjbmZmXrpg0p6sBhXvs5CEKittshNvg3vXnJ7FVh4ZdYKoqkRQiM-X6yr_PQrxVGVG9XTzqgX_vr-pg6Bq_2OVn6Mm5xa2H6b1HDOvh7K1Z6avSDf_k5XnWqhjB0W5g99zHX"
-// }' "https://fcm.googleapis.com/fcm/send"
-
-// curl --header "Authorization: key=AIzaSyBRccipNzuLK6veZgpAQPOIUEZAu8Mpy5o" \
-// --header Content-Type:"application/json" \
-// https://fcm.googleapis.com/fcm/send \
-//     -d "{\"registration_ids\":[\"ABC\"]}"
-
-
-// "Messaging: Please change your web app manifest's 'gcm_sender_id' value to '103953800507' to use Firebase messaging. (messaging/incorrect-gcm-sender-id)."
