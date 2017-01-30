@@ -37,10 +37,11 @@ app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorag
                 let info = {
                     userId: res.results.userId,
                     username: res.results.username,
-                    roomCategoryId: res.results.hotelId,
+                    roomCategoryId: res.results.siteId || res.results.siteId,
                     roomCategoryName: res.results.hotelName,
                     token: res.results.token,
-                    token_fcm: res.results.token_fcm
+                    token_fcm: res.results.token_fcm,
+                    roomPath: res.roomPath
                 };
 
                 localStorageService.set('_INFOUSER', info);
@@ -85,9 +86,13 @@ app.controller('mainController', [`$scope`, `apiService`, `$state`, `localStorag
 
 app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorageService', 'CONFIG', '$firebaseObject', '$state', '$firebaseAuth', 'apiService', function($scope, $firebaseArray, localStorageService, CONFIG, $firebaseObject, $state, $firebaseAuth, apiService){
     const info = localStorageService.get('_INFOUSER');
-    const getInfoRoom = firebase.database().ref(CONFIG.PATH_FIREBASE + info.roomCategoryId);
+
+    if(!info){
+        $state.go('login');
+    }
+
+    const getInfoRoom = firebase.database().ref(info.roomPath);
     const queryRooms = getInfoRoom.orderByChild('timeStamp');
-    // const messaging = firebase.messaging();
 
     if(!info.username){
         $state.go('login');
@@ -102,7 +107,8 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
 
     $scope.goChatRoom = function(data){
         // console.log(data);
-        const getRoomSelect = firebase.database().ref(`${CONFIG.PATH_FIREBASE}/${info.roomCategoryId}/${data.$id}/admin`);
+        let roomChat = `${info.roomPath + data.$id}/admin`;
+        const getRoomSelect = firebase.database().ref(roomChat);
 
         getRoomSelect.update({
             unReadMessage: 0
@@ -125,7 +131,7 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
 
 app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$state', 'localStorageService', '$stateParams', '$firebaseObject', 'CONFIG', 'apiService', function($scope, $firebaseArray, $rootScope, $state, localStorageService, $stateParams, $firebaseObject, CONFIG, apiService){
     const info = localStorageService.get('_INFOUSER');
-    const getPath = firebase.database().ref(CONFIG.PATH_FIREBASE + info.roomCategoryId);
+    const getPath = firebase.database().ref(info.roomPath);
     const getMessages = getPath.child($stateParams.id);
 
     $scope.infoRoom = $firebaseObject(getMessages);
@@ -154,7 +160,7 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
             notification: {
                 body: $scope.newText
             },
-            userId: $stateParams.id
+            deviceId: $stateParams.id
         };
         
         const data = {
@@ -164,7 +170,7 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
             role: CONFIG.ROLE_CHAT
         };
         
-        // console.log(dataMessage);
+        console.log(dataMessage);
 
         $scope.infoRoom.$save().then(() => {
             $scope.items.$add(data);

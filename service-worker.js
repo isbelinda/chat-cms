@@ -1,4 +1,4 @@
-var cacheName = 'chat-cms-0.0.2';
+var cacheName = 'chat-cms-0.0.3';
 var filesToCache = [
     '/',
     '/index.html',
