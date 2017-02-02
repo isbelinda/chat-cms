@@ -1,8 +1,7 @@
-var cacheName = 'chat-cms-0.0.3';
+var cacheName = 'chat-cms-0.0.4';
 var filesToCache = [
     '/',
     '/index.html',
-    '/scripts/app.js',
     '/scripts/config.js',
     '/scripts/script.js',
     '/views/chat.html',

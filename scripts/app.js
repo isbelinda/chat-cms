@@ -93,7 +93,7 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
 
     const getInfoRoom = firebase.database().ref(info.roomPath);
     const queryRooms = getInfoRoom.orderByChild('timeStamp');
-
+    
     if(!info.username){
         $state.go('login');
         return;
@@ -135,7 +135,7 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
     const getMessages = getPath.child($stateParams.id);
 
     $scope.infoRoom = $firebaseObject(getMessages);
-
+    
     if(!info.username){
         $state.go('login');
         return;
@@ -171,16 +171,12 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
         };
         
         console.log(dataMessage);
+        console.log('test chat controller');
 
         $scope.infoRoom.$save().then(() => {
             $scope.items.$add(data);
             apiService.user.sendMessage(dataMessage, (res) => {
                 console.log(res);
-                if(res.isSuccess){
-
-                } else {
-                    console.log(res.message);
-                }
             });
         }).catch((error) => {
             console.log('error', error)
