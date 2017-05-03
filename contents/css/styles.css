@@ -58,6 +58,9 @@ a {
     margin-right: 8px;
     vertical-align: baseline; }
 
+.text-orange {
+  color: #f26f27; }
+
 .block-chat-user {
   margin: 16px; }
   .block-chat-user .name {

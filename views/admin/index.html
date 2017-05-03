@@ -1,0 +1,38 @@
+<div class="container">
+    <div class="">
+        <table class="table">
+            <thead>
+            <tr>
+                <th><abbr title="Position">#</abbr></th>
+                <th>User</th>
+                <th>Project</th>
+                <th><abbr title="Won">Lasted Login</abbr></th>
+                <th><abbr title="Played">Create Date</abbr></th>
+                <th class="text-center">Action</th>
+            </tr>
+            </thead>
+            <!--<tfoot>-->
+            <!--<tr>-->
+                <!--<th><abbr title="Position">#</abbr></th>-->
+                <!--<th>User</th>-->
+                <!--<th><abbr title="Won">Update Date</abbr></th>-->
+                <!--<th><abbr title="Played">Create Date</abbr></th>-->
+                <!--<th>Action</th>-->
+            <!--</tr>-->
+            <!--</tfoot>-->
+            <tbody>
+            <tr ng-repeat="item in items">
+                <th>1</th>
+                <td>{{item.username}}</td>
+                <td>{{item.siteId | checkSite}}</td>
+                <td>{{item.updatedDate | date:'medium'}}</td>
+                <td>{{item.createdDate | date:'medium'}}</td>
+                <td>
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -28,23 +28,4 @@
     </div>
 </section>
 
-<div class="columns is-gapless fix-height-block-cms">
-    <div class="column is-one-quarter">
-        <div class="block-rooms">
-            <a class="room-name"
-               ng-repeat="room in rooms | reverse"
-               ng-click="goChatRoom(room)"
-               ng-class="{'text-orange': room.admin.unReadMessage > 0}">
-                <!--<p ui-sref="rooms.chat({id: room.$id})">{{room.roomName}}</p>-->
-                <span>{{room.roomName}}</span>
-                <span class="badge pull-right" ng-if="room.admin.unReadMessage > 0">{{room.admin.unReadMessage}}</span>
-                <!--<span class="icon is-small" ng-click="removeRoom(room.$id)">-->
-                  <!--<i class="fa fa-remove"></i>-->
-                <!--</span>-->
-            </a>
-        </div>
-    </div>
-    <div class="column">
-        <ui-view></ui-view>
-    </div>
-</div>
+<ui-view></ui-view>

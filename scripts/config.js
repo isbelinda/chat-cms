@@ -17,6 +17,19 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: 'views/chat.html',
             controller: 'chatController'
         })
+    
+        .state('admin', {
+            url: '/admin',
+            abstract: true,
+            templateUrl: 'views/admin/layout.html',
+            controller: 'mainAdminController'
+        })
+
+        .state('admin.user', {
+            url: '/user',
+            templateUrl: 'views/admin/index.html',
+            controller: 'adminController'
+        })
 }]);
 
 app.run(['$state', '$rootScope', 'localStorageService', 'FIREBASE_CONFIG', '$firebaseAuth', 'apiService', function ($state, $rootScope, localStorageService, FIREBASE_CONFIG, $firebaseAuth, apiService) {
