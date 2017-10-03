@@ -6,7 +6,7 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     }
 
     const getInfoRoom = firebase.database().ref(info.roomPath);
-    const queryRooms = getInfoRoom.orderByChild('timeStamp');
+    //const queryRooms = getInfoRoom.orderByChild('timeStamp');
 
     if(!info.username){
         $state.go('login');
@@ -15,7 +15,7 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
 
     const init = () => {
         $scope.username = info.username;
-        $scope.rooms = $firebaseArray(queryRooms);
+        $scope.rooms = $firebaseArray(getInfoRoom);
         updateToken(localStorageService.get('TOKEN_FCM'));
     };
 
@@ -45,7 +45,7 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
 
     const updateToken = (token) => {
         apiService.user.updateToken({ token_fcm: token}, (res) => {
-            console.log(res)
+            //console.log(res)
             if(res.isSuccess){
                 console.log(`update token success`);
             }

@@ -32,7 +32,7 @@
     <div class="column is-one-quarter">
         <div class="block-rooms">
             <a class="room-name"
-               ng-repeat="room in rooms | reverse"
+               ng-repeat="room in rooms | filterLastedDate"
                ng-click="goChatRoom(room)"
                ng-class="{'text-orange': room.status.unread_admin_count > 0}">
                 <!--<p ui-sref="rooms.chat({id: room.$id})">{{room.roomName}}</p>-->

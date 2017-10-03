@@ -133,3 +133,9 @@ app.filter('checkHotel', function(SITE) {
         return getSite[0].name;
     }
 });
+
+app.filter('filterLastedDate', function() {
+    return function(items) {
+        return items.sort((a, b) => b.status.update_date - a.status.update_date)
+    }
+})
