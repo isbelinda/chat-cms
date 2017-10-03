@@ -46,7 +46,7 @@ body {
 .is-primary:hover.button, .is-primary:focus.button {
   background-color: #6fcee5; }
 
-a {
+a, .block-chat-user .text.translate label {
   color: #02adcc; }
 
 .text-error {
@@ -77,6 +77,10 @@ a {
     display: inline-block;
     word-break: break-all;
     color: #000; }
+    .block-chat-user .text.translate input[type='checkbox'] {
+      display: none; }
+    .block-chat-user .text.translate label {
+      cursor: pointer; }
   .block-chat-user .date {
     font-size: 11px;
     margin-left: 8px;

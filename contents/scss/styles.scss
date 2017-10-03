@@ -120,6 +120,17 @@ a{
     display: inline-block;
     word-break: break-all;
     color: $black-primary;
+
+    &.translate {
+      input[type='checkbox'] {
+        display: none; 
+      }
+
+      label {
+        @extend a;
+        cursor: pointer;
+      }
+    }
   }
 
   .date{
