@@ -5,8 +5,8 @@ app.constant('CONFIG', {
     // DATE_NOW: Date.now(),
     DATE_NOW: firebase.database.ServerValue.TIMESTAMP,
     PATH_FIREBASE: `chatRooms/`,
-    // PATH_API: `http://localhost:3004/api`,
-    PATH_API: `https://livechatapi.handigo.run/api`,
+    PATH_API: `http://localhost:3004/api`,
+    // PATH_API: `https://livechatapi.handigo.run/api`,
     // PATH_API: `https://apichat.herokuapp.com/api`,
     ROLE_CHAT: 1, // Mark user
     PATH_HANDIGO: `http://localhost:3001/api`
@@ -39,7 +39,8 @@ app.constant('FIREBASE_CONFIG', {
 
 app.constant('SITE', [
     { id: 1, name: "HandiGo" },
-    { id: 2, name: "NaviGo" }
+    { id: 2, name: "NaviGo" },
+    { id: 3, name: "HandiGo" }
 ]);
 
 app.constant('ROLE', [

@@ -36,7 +36,8 @@
                ng-click="goChatRoom(room)"
                ng-class="{'text-orange': room.status.unread_admin_count > 0}">
                 <!--<p ui-sref="rooms.chat({id: room.$id})">{{room.roomName}}</p>-->
-                <span>{{room.$id}}</span>
+                <span>{{room.status.room_no}}</span>
+                <!-- <span>{{room.$id}}</span> -->
                 <span class="badge pull-right" ng-if="room.status.unread_admin_count > 0">{{room.status.unread_admin_count}}</span>
                 <!--<span class="icon is-small" ng-click="removeRoom(room.$id)">-->
                   <!--<i class="fa fa-remove"></i>-->
