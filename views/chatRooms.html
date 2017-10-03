@@ -34,10 +34,10 @@
             <a class="room-name"
                ng-repeat="room in rooms | reverse"
                ng-click="goChatRoom(room)"
-               ng-class="{'text-orange': room.admin.unReadMessage > 0}">
+               ng-class="{'text-orange': room.status.unread_admin_count > 0}">
                 <!--<p ui-sref="rooms.chat({id: room.$id})">{{room.roomName}}</p>-->
-                <span>{{room.roomName}}</span>
-                <span class="badge pull-right" ng-if="room.admin.unReadMessage > 0">{{room.admin.unReadMessage}}</span>
+                <span>{{room.$id}}</span>
+                <span class="badge pull-right" ng-if="room.status.unread_admin_count > 0">{{room.status.unread_admin_count}}</span>
                 <!--<span class="icon is-small" ng-click="removeRoom(room.$id)">-->
                   <!--<i class="fa fa-remove"></i>-->
                 <!--</span>-->

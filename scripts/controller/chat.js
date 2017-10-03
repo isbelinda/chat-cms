@@ -1,4 +1,4 @@
-app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorageService', 'CONFIG', '$firebaseObject', '$state', '$firebaseAuth', 'apiService', function($scope, $firebaseArray, localStorageService, CONFIG, $firebaseObject, $state, $firebaseAuth, apiService){
+app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorageService', 'CONFIG', '$firebaseObject', '$state', '$firebaseAuth', 'apiService', '$stateParams', function($scope, $firebaseArray, localStorageService, CONFIG, $firebaseObject, $state, $firebaseAuth, apiService, $stateParams){
     const info = localStorageService.get('_INFOUSER');
 
     if(!info){
@@ -20,12 +20,24 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     };
 
     $scope.goChatRoom = function(data){
-        // console.log(data);
-        let roomChat = `${info.roomPath + data.$id}/admin`;
+        let oldId = window.location.hash.split('#!/chatRooms/chat/')[1]
+
+        if(oldId && oldId !== data.$id) {
+            let roomChat = `${info.roomPath + oldId}/status`;
+            console.log(roomChat)
+            const getRoomSelect = firebase.database().ref(roomChat);
+    
+            getRoomSelect.update({
+                is_admin_chatting: false
+            });
+        }
+        
+        let roomChat = `${info.roomPath + data.$id}/status`;
         const getRoomSelect = firebase.database().ref(roomChat);
 
         getRoomSelect.update({
-            unReadMessage: 0
+            is_admin_chatting: true,
+            unread_admin_count: 0
         });
 
         $state.go('rooms.chat', {id: data.$id});
@@ -59,7 +71,7 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
     $scope.roleChat = CONFIG.ROLE_CHAT;
 
     function init (){
-        const msgSync = getMessages.child('chatMessage');
+        const msgSync = getMessages.child('chat');
         $scope.items = $firebaseArray(msgSync);
 
         $scope.items.$loaded(() => {
@@ -78,31 +90,22 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
         };
 
         const data = {
-            username: $scope.username,
-            text: $scope.newText,
-            postedDate: CONFIG.DATE_NOW,
-            role: CONFIG.ROLE_CHAT
+            chat: $scope.newText,
+            create_date: CONFIG.DATE_NOW,
+            is_admin: true
         };
-
-        console.log(dataMessage);
-        console.log('test chat controller');
 
         $scope.infoRoom.$save().then(() => {
             $scope.items.$add(data);
-            apiService.user.sendMessage(dataMessage, (res) => {
-                console.log(res);
-            });
+            // apiService.user.sendMessage(dataMessage, (res) => {
+            //     console.log(res);
+            // });
         }).catch((error) => {
             console.log('error', error)
         });
 
-        getMessages.update({
-            timeStamp: CONFIG.DATE_NOW,
-            unReadMessage: ($scope.infoRoom.unReadMessage || 0) + 1
-        });
-
-        getMessages.child(`admin`).update({
-            unReadMessage: 0
+        getMessages.child(`status`).update({
+            unread_user_count: $scope.infoRoom.status.unread_user_count + 1
         });
 
         $scope.newText = '';

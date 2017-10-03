@@ -40,6 +40,14 @@ app.run(['$state', '$rootScope', 'localStorageService', 'FIREBASE_CONFIG', '$fir
 
     $rootScope.signOut = () => {
         console.log(`log out`);
+        const info = localStorageService.get('_INFOUSER');
+        let oldId = window.location.hash.split('#!/chatRooms/chat/')[1]
+        let roomChat = `${info.roomPath + oldId}/status`;
+        const getRoomSelect = firebase.database().ref(roomChat);
+
+        getRoomSelect.update({
+            is_admin_chatting: false
+        });
         localStorageService.clearAll();
         $state.go('login');
     }

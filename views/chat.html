@@ -1,10 +1,10 @@
 <div class="show-message" scroll-bottom="items">
     <div ng-repeat="item in items">
         <div class="block-chat-user"
-             ng-class="roleChat == item.role ? 'block-chat-user owner':'block-chat-user'">
+             ng-class="roleChat == item.is_admin ? 'block-chat-user owner':'block-chat-user'">
             <!--<sm class="name">{{item.username}}</sm>-->
-            <p class="text">{{item.text}}</p>
-            <sm class="date">{{item.postedDate | date:'MMM d, h:mm a'}}</sm>
+            <p class="text">{{item.chat}}</p>
+            <sm class="date">{{item.create_date | date:'MMM d, h:mm a'}}</sm>
         </div>
     </div>
 </div>
