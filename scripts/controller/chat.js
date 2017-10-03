@@ -105,8 +105,11 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
         });
 
         getMessages.child(`status`).update({
-            unread_user_count: $scope.infoRoom.status.unread_user_count + 1
+            unread_user_count: $scope.infoRoom.status.unread_user_count + 1,
+            update_date: Date.now()
         });
+
+
 
         $scope.newText = '';
 
