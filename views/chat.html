@@ -1,9 +1,13 @@
 <div class="show-message" scroll-bottom="items">
     <div ng-repeat="item in items">
-        <div class="block-chat-user"
-             ng-class="roleChat == item.is_admin ? 'block-chat-user owner':'block-chat-user'">
+        <div class="block-chat-user" ng-class="roleChat == item.is_admin ? 'block-chat-user owner':'block-chat-user'">
             <!--<sm class="name">{{item.username}}</sm>-->
-            <p class="text">{{item.chat}}</p>
+            <div class="text" ng-if="!item.is_admin">
+                <p>{{ item.chat | showMessage: item.is_admin: translated: item.newTranslate }}</p>
+                <input type="checkbox" ng-model="translated" id="{{item.$id}}" ng-change="getTranslate(item)" />
+                <label for="{{item.$id}}">{{translated | buttonTranslate}}</label>
+            </div>
+            <div class="text" ng-if="item.is_admin">{{ item.chat | showMessage: item.is_admin: translated: item.newTranslate }}</div>
             <sm class="date">{{item.create_date | date:'MMM d, h:mm a'}}</sm>
         </div>
     </div>

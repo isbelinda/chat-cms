@@ -139,3 +139,15 @@ app.filter('filterLastedDate', function() {
         return items.sort((a, b) => b.status.update_date - a.status.update_date)
     }
 })
+
+app.filter('showMessage', function($http) {
+    return function(message, isAdmin, translated, newMessage) {
+        return isAdmin? message: translated? message.replace(message, newMessage || 'Loading..'): message
+    }
+})
+
+app.filter('buttonTranslate', function() {
+    return function(translated) {
+        return translated? 'See Original': 'See Translate'
+    }
+})

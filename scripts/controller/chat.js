@@ -55,12 +55,13 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
     init();
 }]);
 
-app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$state', 'localStorageService', '$stateParams', '$firebaseObject', 'CONFIG', 'apiService', function($scope, $firebaseArray, $rootScope, $state, localStorageService, $stateParams, $firebaseObject, CONFIG, apiService){
+app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$state', 'localStorageService', '$stateParams', '$firebaseObject', 'CONFIG', 'apiService', '$http', function($scope, $firebaseArray, $rootScope, $state, localStorageService, $stateParams, $firebaseObject, CONFIG, apiService, $http){
     const info = localStorageService.get('_INFOUSER');
     const getPath = firebase.database().ref(info.roomPath);
     const getMessages = getPath.child($stateParams.id);
 
     $scope.infoRoom = $firebaseObject(getMessages);
+    $scope.message = undefined;
 
     if(!info.username){
         $state.go('login');
@@ -77,6 +78,22 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
         $scope.items.$loaded(() => {
             console.log(`loaded`);
         });
+    }
+
+    $scope.getTranslate = item => {
+        console.log(item)
+        if(!item.newTranslate) {
+            $http.post('http://localhost:3335/api/translate', { message: item.chat })
+            .then(res => {
+                if(res.data.Status === 200) {
+                    angular.forEach($scope.items, function(value, key) {
+                        if(value.$id === item.$id) {
+                            value.newTranslate = res.data.data.message
+                        }
+                    })
+                }
+            })
+        }
     }
 
     $scope.addMessage = () => {
