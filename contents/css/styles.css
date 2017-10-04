@@ -78,7 +78,6 @@ a, .block-chat-user .text.translate label {
     border-radius: 4px;
     max-width: 25%;
     display: inline-block;
-    word-break: break-all;
     color: #000; }
     .block-chat-user .text.translate input[type='checkbox'] {
       display: none; }
