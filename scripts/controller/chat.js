@@ -59,9 +59,12 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
     const info = localStorageService.get('_INFOUSER');
     const getPath = firebase.database().ref(info.roomPath);
     const getMessages = getPath.child($stateParams.id);
+    let isAutoTranslate = localStorageService.get('_isAutoTranslate')
 
     $scope.infoRoom = $firebaseObject(getMessages);
-    $scope.message = undefined;
+    $scope.autoTranslate = isAutoTranslate? isAutoTranslate: false
+    let translateMessage = undefined;
+    $scope.isLoading = false;
 
     if(!info.username){
         $state.go('login');
@@ -95,22 +98,58 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
         }
     }
 
+    $scope.getAutoTranslate = item => {
+        localStorageService.set('_isAutoTranslate', item)
+    }
+
     $scope.addMessage = () => {
         if(!$scope.newText) return false;
+        let message = $scope.newText
+        $scope.isLoading = true;
 
         const dataMessage = {
             notification: {
-                body: $scope.newText
+                body: message
             },
             deviceId: $stateParams.id
         };
 
-        const data = {
-            chat: $scope.newText,
-            create_date: CONFIG.DATE_NOW,
-            is_admin: true
-        };
+        let data = {};
 
+        if(localStorageService.get('_isAutoTranslate')) {
+            let chatUser = $scope.items.filter(i => !i.is_admin)
+            let chatUserLasted = chatUser[chatUser.length - 1]
+            $http.post(`${CONFIG.PATH_TRANSLATE}/GetCodeLanguage`, { message: chatUserLasted.chat })
+                .then(response => {
+                    if(response.data.Status === 200) {
+                        $http.post(`${CONFIG.PATH_TRANSLATE}/translate`, { message: message, lang: response.data.data.code })
+                        .then(res => {
+                            if(res.data.Status === 200) {
+                                data = {
+                                    chat: res.data.data.message,
+                                    chat_original: message,
+                                    create_date: CONFIG.DATE_NOW,
+                                    is_admin: true
+                                };
+                                updateMessage(data)
+                            }
+                        })
+                    }
+                })
+            
+        } else {
+            data = {
+                chat: message,
+                create_date: CONFIG.DATE_NOW,
+                is_admin: true
+            }
+
+            updateMessage(data)
+        }
+    };
+
+    function updateMessage(data) {
+        $scope.isLoading = false;
         $scope.infoRoom.$save().then(() => {
             $scope.items.$add(data);
             // apiService.user.sendMessage(dataMessage, (res) => {
@@ -125,11 +164,12 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
             update_date: Date.now()
         });
 
-
-
         $scope.newText = '';
-
-    };
+    }
 
     init();
 }]);
+
+async function getTranslate() {
+
+}

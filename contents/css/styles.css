@@ -37,6 +37,9 @@ body {
 .margin-center-page {
   margin: 50% auto auto; }
 
+.margin-left-16 {
+  margin-left: 16px; }
+
 .text-size-24 {
   font-size: 24px; }
 
@@ -133,6 +136,12 @@ a, .block-chat-user .text.translate label {
     padding: 8px;
     height: auto;
     width: 100%; }
+
+.loading-image {
+  width: 20px;
+  position: absolute;
+  margin-left: -35px;
+  padding-top: 5px; }
 
 @media (max-width: 768px) {
   .block-chat-user .text {

@@ -18,5 +18,8 @@
            class="inputText min-width-360"
            ng-model="newText"
            my-enter="addMessage()">
+    <img src="/contents/images/loading.gif" class="loading-image" ng-if="isLoading"/>
     <button ng-click="addMessage()" class="button is-primary">Send</button>
+    <input class="margin-left-16" type="checkbox" ng-model="autoTranslate" id="autoTranslate" ng-change="getAutoTranslate(autoTranslate)" />
+    <label for="autoTranslate">Auto Translate</label>
 </div>

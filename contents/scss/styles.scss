@@ -61,6 +61,10 @@ body {
   margin: 50% auto auto;
 }
 
+.margin-left-16 {
+  margin-left: 16px;
+}
+
 
 /// Font size
 .text-size-24{
@@ -207,6 +211,13 @@ a{
     height: auto;
     width: 100%;
   }
+}
+
+.loading-image {
+  width: 20px;
+  position: absolute;
+  margin-left: -35px;
+  padding-top: 5px;
 }
 
 @media (max-width: 768px) {
