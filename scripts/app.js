@@ -9,7 +9,8 @@ app.constant('CONFIG', {
     // PATH_API: `https://livechatapi.handigo.run/api`,
     // PATH_API: `https://apichat.herokuapp.com/api`,
     ROLE_CHAT: 1, // Mark user
-    PATH_HANDIGO: `http://localhost:3001/api`
+    PATH_HANDIGO: `http://localhost:3001/api`,
+    PATH_TRANSLATE: 'https://translate-api-test.herokuapp.com/api'
 });
 
 // app.constant('FIREBASE_CONFIG', {

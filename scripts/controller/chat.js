@@ -81,9 +81,8 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
     }
 
     $scope.getTranslate = item => {
-        console.log(item)
         if(!item.newTranslate) {
-            $http.post('http://localhost:3335/api/translate', { message: item.chat })
+            $http.post(`${CONFIG.PATH_TRANSLATE}/translate`, { message: item.chat })
             .then(res => {
                 if(res.data.Status === 200) {
                     angular.forEach($scope.items, function(value, key) {
