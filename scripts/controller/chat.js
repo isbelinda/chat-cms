@@ -21,10 +21,9 @@ app.controller('chatRoomsController', ['$scope', '$firebaseArray', 'localStorage
 
     $scope.goChatRoom = function(data){
         let oldId = window.location.hash.split('#!/chatRooms/chat/')[1]
-
-        if(oldId && oldId !== data.$id) {
+        let getRoomBefore = $scope.rooms.filter(i => i.$id === oldId)[0]
+        if(getRoomBefore && oldId && oldId !== data.$id) {
             let roomChat = `${info.roomPath + oldId}/status`;
-            console.log(roomChat)
             const getRoomSelect = firebase.database().ref(roomChat);
     
             getRoomSelect.update({
@@ -77,9 +76,9 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
     function init (){
         const msgSync = getMessages.child('chat');
         $scope.items = $firebaseArray(msgSync);
-
         $scope.items.$loaded(() => {
             console.log(`loaded`);
+            console.log($scope.items.length)
         });
     }
 
@@ -106,7 +105,6 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
         if(!$scope.newText) return false;
         let message = $scope.newText
         $scope.isLoading = true;
-
         const dataMessage = {
             notification: {
                 body: message
@@ -116,36 +114,45 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
 
         let data = {};
 
-        if(localStorageService.get('_isAutoTranslate')) {
-            let chatUser = $scope.items.filter(i => !i.is_admin)
-            let chatUserLasted = chatUser[chatUser.length - 1]
-            $http.post(`${CONFIG.PATH_TRANSLATE}/GetCodeLanguage`, { message: chatUserLasted.chat })
-                .then(response => {
-                    if(response.data.Status === 200) {
-                        $http.post(`${CONFIG.PATH_TRANSLATE}/translate`, { message: message, lang: response.data.data.code })
-                        .then(res => {
-                            if(res.data.Status === 200) {
-                                data = {
-                                    chat: res.data.data.message,
-                                    chat_original: message,
-                                    create_date: CONFIG.DATE_NOW,
-                                    is_admin: true
-                                };
-                                updateMessage(data)
-                            }
-                        })
+        $scope.infoRoom.$loaded()
+            .then((data) => {
+                console.log(data.chat)
+                if(data.chat) {
+                    if(localStorageService.get('_isAutoTranslate')) {
+                        let chatUser = $scope.items.filter(i => !i.is_admin)
+                        let chatUserLasted = chatUser[chatUser.length - 1]
+                        $http.post(`${CONFIG.PATH_TRANSLATE}/GetCodeLanguage`, { message: chatUserLasted.chat })
+                            .then(response => {
+                                if(response.data.Status === 200) {
+                                    $http.post(`${CONFIG.PATH_TRANSLATE}/translate`, { message: message, lang: response.data.data.code })
+                                    .then(res => {
+                                        if(res.data.Status === 200) {
+                                            data = {
+                                                chat: res.data.data.message,
+                                                chat_original: message,
+                                                create_date: CONFIG.DATE_NOW,
+                                                is_admin: true
+                                            };
+                                            updateMessage(data)
+                                        }
+                                    })
+                                }
+                            })
+                        
+                    } else {
+                        data = {
+                            chat: message,
+                            create_date: CONFIG.DATE_NOW,
+                            is_admin: true
+                        }
+                        updateMessage(data)
                     }
-                })
-            
-        } else {
-            data = {
-                chat: message,
-                create_date: CONFIG.DATE_NOW,
-                is_admin: true
-            }
-
-            updateMessage(data)
-        }
+                } else {
+                    alert('This room is expire.')
+                    $state.go('rooms')
+                    return false
+                }
+            })        
     };
 
     function updateMessage(data) {
@@ -169,7 +176,3 @@ app.controller('chatController',['$scope', '$firebaseArray', '$rootScope', '$sta
 
     init();
 }]);
-
-async function getTranslate() {
-
-}
